@@ -1,30 +1,11 @@
 <script>
-	function enable() {
-		fetch("/api/enable")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	}
+	import { onMount } from "svelte";
 
-	function disable() {
-		fetch("./api/disable")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	}
+	onMount(() => {
+		if (localStorage.getItem("SERVICE_ROLE_KEY") || null == null) {
+			window.location.replace("./login");
+		} else {
+			window.location.replace("./app");
+		}
+	});
 </script>
-
-<button class="btn green" on:click={() => enable()}> enable </button>
-<button class="btn red" on:click={() => disable()}> disable </button>

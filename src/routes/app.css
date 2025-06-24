@@ -12,3 +12,7 @@
 		@apply bg-red-200 outline-red-500;
 	}
 }
+
+@utility inp {
+	@apply rounded bg-white px-4 py-1 text-xl outline-2 transition focus:outline-blue-400;
+}
