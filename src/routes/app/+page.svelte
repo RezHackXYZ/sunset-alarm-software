@@ -1,9 +1,6 @@
 <script>
-	import { createClient } from "@supabase/supabase-js";
-	import { PUBLIC_SUPABASE_URL } from "$env/static/public";
 	import { onMount } from "svelte";
 
-	let supabase;
 	let enabled = false;
 
 	onMount(() => {
@@ -11,18 +8,9 @@
 			window.location.replace("login");
 		}
 
-		supabase = createClient(PUBLIC_SUPABASE_URL, localStorage.getItem("SERVICE_ROLE_KEY"));
-
-		const channel = supabase
-			.channel("custom-insert-channel")
-			.on(
-				"postgres_changes",
-				{ event: "INSERT", schema: "public", table: "AlarmStatus" },
-				(payload) => {
-					enabled = payload.new.Value;
-				},
-			)
-			.subscribe();
+		new EventSource("/api/stream").onmessage = (e) => {
+			enabled = JSON.parse(e.data).new.Value;
+		};
 	});
 </script>
 
@@ -30,10 +18,7 @@
 	<button
 		class="btn green"
 		on:click={async () => {
-			const { data, error } = await supabase
-				.from("AlarmStatus")
-				.insert([{ Value: true }])
-				.select();
+			fetch("/api/enable");
 		}}
 	>
 		enable
@@ -42,10 +27,7 @@
 	<button
 		class="btn red"
 		on:click={async () => {
-			const { data, error } = await supabase
-				.from("AlarmStatus")
-				.insert([{ Value: false }])
-				.select();
+			fetch("/api/disable");
 		}}
 	>
 		disable
