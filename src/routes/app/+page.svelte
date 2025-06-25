@@ -1,38 +1,53 @@
 <script>
-	function enable() {
-		fetch("api/enable")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	}
+	import { createClient } from "@supabase/supabase-js";
+	import { PUBLIC_SUPABASE_URL } from "$env/static/public";
+	import { onMount } from "svelte";
 
-	function disable() {
-		fetch("api/disable")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	}
+	let supabase;
+	let enabled = false;
 
-	let haveSecretKey = false;
+	onMount(() => {
+		if ((localStorage.getItem("SERVICE_ROLE_KEY") || null) == null) {
+			window.location.replace("login");
+		}
 
-	//getSecretKeyInExchangeToPassword
+		supabase = createClient(PUBLIC_SUPABASE_URL, localStorage.getItem("SERVICE_ROLE_KEY"));
+
+		const channel = supabase
+			.channel("custom-insert-channel")
+			.on(
+				"postgres_changes",
+				{ event: "INSERT", schema: "public", table: "AlarmStatus" },
+				(payload) => {
+					enabled = payload.new.Value;
+				},
+			)
+			.subscribe();
+	});
 </script>
 
-<div class="flex h-full items-center justify-center">
-	<div class="flex flex-col gap-4">
-			<button class="btn green" on:click={() => enable()}> enable </button>
-			<button class="btn red" on:click={() => disable()}> disable </button>
-	</div>
-</div>
+{#if !enabled}
+	<button
+		class="btn green"
+		on:click={async () => {
+			const { data, error } = await supabase
+				.from("AlarmStatus")
+				.insert([{ Value: true }])
+				.select();
+		}}
+	>
+		enable
+	</button>
+{:else}
+	<button
+		class="btn red"
+		on:click={async () => {
+			const { data, error } = await supabase
+				.from("AlarmStatus")
+				.insert([{ Value: false }])
+				.select();
+		}}
+	>
+		disable
+	</button>
+{/if}
