@@ -32,6 +32,7 @@ export function GET() {
 				controller.enqueue(":\n\n");
 			}, 15_000);
 
+			// @ts-ignore
 			controller.onCancel = () => {
 				clearInterval(keepAlive);
 				clients = clients.filter((c) => c !== controller);
