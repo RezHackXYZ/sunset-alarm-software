@@ -10,7 +10,7 @@
 		}
 
 		new EventSource("/api/stream").onmessage = (e) => {
-			enabled = JSON.parse(e.data).new.ChangeTo;
+			enabled = (JSON.parse(e.data).new.ChangeTo == "true");
 		};
 	});
 </script>
