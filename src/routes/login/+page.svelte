@@ -1,3 +1,5 @@
+<!--
+
 <script>
 	import { error } from "@sveltejs/kit";
 	import { onMount } from "svelte";
@@ -44,3 +46,5 @@
 
 <input class="inp" bind:value={password} type="text" placeholder="password" />
 <button class="btn green w-fit" on:click={login}>login</button>
+
+-->

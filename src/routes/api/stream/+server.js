@@ -16,7 +16,7 @@ supabase
 	.channel("mirror-realtime")
 	.on(
 		"postgres_changes",
-		{ event: "INSERT", schema: "public", table: "AlarmStatus" },
+		{ event: "INSERT", schema: "public", table: "Logs" },
 		(payload) => {
 			broadcastToClients(payload);
 		},

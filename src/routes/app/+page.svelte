@@ -4,12 +4,13 @@
 	let enabled = false;
 
 	onMount(() => {
-		if ((localStorage.getItem("SERVICE_ROLE_KEY") || null) == null) {
+		//if ((localStorage.getItem("SERVICE_ROLE_KEY") || null) == null) {
+		if (true) {
 			window.location.replace("login");
 		}
 
 		new EventSource("/api/stream").onmessage = (e) => {
-			enabled = JSON.parse(e.data).new.Value;
+			enabled = JSON.parse(e.data).new.ChangeTo;
 		};
 	});
 </script>
