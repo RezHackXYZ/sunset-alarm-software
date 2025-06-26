@@ -4,8 +4,7 @@
 	let enabled = false;
 
 	onMount(() => {
-		//if ((localStorage.getItem("SERVICE_ROLE_KEY") || null) == null) {
-		if (false) {
+		if ((localStorage.getItem("password") || null) != null) {
 			window.location.replace("login");
 		}
 

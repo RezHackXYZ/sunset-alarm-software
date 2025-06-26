@@ -2,17 +2,17 @@
 @import "tailwindcss";
 
 @utility btn {
-	@apply cursor-pointer rounded bg-white px-4 py-1 text-xl outline-2 transition hover:scale-110;
+	@apply cursor-pointer rounded bg-white dark:bg-gray-800 px-4 py-1 text-xl outline-2 transition hover:scale-110;
 
 	&.green {
-		@apply bg-green-200 outline-green-500;
+		@apply bg-green-200 dark:bg-green-700 outline-green-500 dark:outline-green-300;
 	}
 
 	&.red {
-		@apply bg-red-200 outline-red-500;
+		@apply bg-red-200 dark:bg-red-700 outline-red-500 dark:outline-red-300;
 	}
 }
 
 @utility inp {
-	@apply rounded bg-white px-4 py-1 text-xl outline-2 transition focus:outline-blue-400;
+	@apply rounded bg-white dark:bg-gray-800 px-4 py-1 text-xl outline-2 transition focus:outline-blue-400 dark:focus:outline-blue-300;
 }

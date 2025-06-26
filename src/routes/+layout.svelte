@@ -8,7 +8,7 @@
 
 <Toaster />
 
-<div class="flex h-full items-center justify-center bg-white font-[Space_Grotesk]">
+<div class="flex h-full items-center justify-center bg-white dark:bg-black dark:text-white font-[Space_Grotesk]">
 	<div class="flex flex-col gap-4">{@render children()}</div>
 </div>
 

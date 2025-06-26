@@ -1,7 +1,4 @@
-<!--
-
 <script>
-	import { error } from "@sveltejs/kit";
 	import { onMount } from "svelte";
 	import { toast } from "svelte-5-french-toast";
 
@@ -13,25 +10,26 @@
 		} else {
 			toast.promise(
 				fetch(
-					"/api/getSecretKeyInExchangeToPassword?password=" + encodeURIComponent(password),
+					"/api/checkPassword?type=LoginPassword&password=" + encodeURIComponent(password),
 				).then(async (response) => {
 					if (!response.ok) {
-						if (response.status == 401) {
-							throw new Error("Wrong Password.");
-						}
 						throw new Error(`HTTP error! status: ${response.status}`);
 					}
-					const data = await response.text();
-					localStorage.setItem("SERVICE_ROLE_KEY", data);
-					setTimeout(() => {
-						window.location.replace("app");
-					}, 1000);
-					return data;
+					const data = await response.json();
+					if (data.isPasswordRight) {
+						localStorage.setItem("password", password);
+						setTimeout(() => {
+							window.location.replace("app");
+						}, 500);
+						return null;
+					} else {
+						throw new Error("Wrong Password!");
+					}
 				}),
 				{
 					loading: "Logging in...",
 					success: "Login successful!",
-					error: (err) => `Login failed. ${err.message}`,
+					error: (err) => `Login failed: ${err.message}`,
 				},
 			);
 		}
@@ -46,5 +44,3 @@
 
 <input class="inp" bind:value={password} type="text" placeholder="password" />
 <button class="btn green w-fit" on:click={login}>login</button>
-
--->
