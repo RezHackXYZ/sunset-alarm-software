@@ -1,42 +1,40 @@
 import { supabase } from "$lib/supabase.server.js";
-let clients = [];
 
-function broadcastToClients(data) {
-	const payload = `data: ${JSON.stringify(data)}\n\n`;
-	for (const client of clients) {
-		try {
-			client.enqueue(payload);
-		} catch (err) {
-			console.error("❌ dead SSE client", err);
-		}
-	}
+const clients = new Set();
+
+// only run subscription once
+let isSubscribed = false;
+if (!isSubscribed) {
+	isSubscribed = true;
+
+	supabase
+		.channel("realtime-mirror")
+		.on("postgres_changes", { event: "INSERT", schema: "public", table: "Logs" }, (payload) => {
+			const msg = `data: ${JSON.stringify(payload)}\n\n`;
+			for (const res of clients) {
+				try {
+					res.write(msg);
+				} catch {
+					clients.delete(res);
+				}
+			}
+		})
+		.subscribe();
 }
 
-supabase
-	.channel("mirror-realtime")
-	.on(
-		"postgres_changes",
-		{ event: "INSERT", schema: "public", table: "Logs" },
-		(payload) => {
-			broadcastToClients(payload);
-		},
-	)
-	.subscribe();
-
-export function GET() {
+export async function GET() {
 	const stream = new ReadableStream({
 		start(controller) {
-			clients.push(controller);
+			const encoder = new TextEncoder();
+			const write = (msg) => controller.enqueue(encoder.encode(msg));
 
-			const keepAlive = setInterval(() => {
-				controller.enqueue(":\n\n");
-			}, 15_000);
-
-			// @ts-ignore
-			controller.onCancel = () => {
-				clearInterval(keepAlive);
-				clients = clients.filter((c) => c !== controller);
+			const client = {
+				write,
+				close: () => controller.close(),
 			};
+
+			clients.add(client);
+			write(`event: open\ndata: connected\n\n`);
 		},
 	});
 

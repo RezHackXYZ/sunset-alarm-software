@@ -9,8 +9,11 @@
 			window.location.replace("login");
 		}
 
-		new EventSource("/api/stream").onmessage = (e) => {
-			enabled = (JSON.parse(e.data).new.ChangeTo == "true");
+		const eventSource = new EventSource("/api/stream");
+
+		eventSource.onmessage = (e) => {
+			const data = JSON.parse(e.data);
+			enabled = data.new.ChangeTo == "true";
 		};
 	});
 </script>
