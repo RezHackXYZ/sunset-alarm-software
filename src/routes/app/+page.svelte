@@ -5,7 +5,7 @@
 
 	onMount(() => {
 		//if ((localStorage.getItem("SERVICE_ROLE_KEY") || null) == null) {
-		if (true) {
+		if (false) {
 			window.location.replace("login");
 		}
 
